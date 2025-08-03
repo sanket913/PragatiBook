@@ -131,7 +131,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
                   />
                 </div>
                 {error && <p className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 rounded">{error}</p>}
-                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6" disabled={loading}>
+                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
@@ -188,7 +188,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
                   />
                 </div>
                 {error && <p className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 rounded">{error}</p>}
-                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6" disabled={loading}>
+                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading}>
                   {loading ? 'Creating account...' : 'Create Account'}
                 </Button>
               </form>
