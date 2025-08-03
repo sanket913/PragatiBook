@@ -19,7 +19,7 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import { billsApi, ApiError } from '@/lib/api'; // ✅ Correct import
+import { billsApi, ApiError } from '@/lib/api';
 
 interface DashboardProps {
   user: any;
@@ -40,7 +40,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('all');
   const [filteredBills, setFilteredBills] = useState<Bill[]>([]);
-
 
   useEffect(() => {
     loadBills();
@@ -71,9 +70,9 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       setLoading(true);
       const userBills = await billsApi.getAll();
       const formattedBills = userBills.map((bill: any) => ({
-      ...bill,
-      id: bill.id || bill._id, // map _id to id if needed
-    }));
+        ...bill,
+        id: bill.id || bill._id,
+      }));
 
       setBills(formattedBills);
       setError('');
@@ -81,7 +80,6 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       if (error instanceof ApiError) {
         setError(error.message);
         if (error.status === 401) {
-          // Token expired, logout user
           onLogout();
           return;
         }
@@ -98,10 +96,8 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       setLoading(true);
       
       if (selectedBill) {
-        // Update existing bill
         await billsApi.update(selectedBill.id, billData);
       } else {
-        // Create new bill
         await billsApi.create(billData);
       }
       
@@ -134,17 +130,19 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
       setLoading(false);
     }
   };
+
   const loadTemplates = () => {
-  const storedTemplates = JSON.parse(localStorage.getItem('ap1700_templates') || '[]');
-  setTemplates(storedTemplates);
+    const storedTemplates = JSON.parse(localStorage.getItem('ap1700_templates') || '[]');
+    setTemplates(storedTemplates);
   };
 
-const loadActiveTemplate = () => {
-  const activeTemplate = localStorage.getItem(`ap1700_active_template_${user.id}`);
-  if (activeTemplate) {
-    setActiveTemplateId(activeTemplate);
-  }
-};
+  const loadActiveTemplate = () => {
+    const activeTemplate = localStorage.getItem(`ap1700_active_template_${user.id}`);
+    if (activeTemplate) {
+      setActiveTemplateId(activeTemplate);
+    }
+  };
+
   const handleCreateBill = () => {
     setSelectedBill(null);
     setCurrentView('create');
@@ -162,8 +160,9 @@ const loadActiveTemplate = () => {
 
   const clearFilters = () => {
     setSearchQuery('');
-    setSelectedCustomer('all'); // ✅ Correct reset
+    setSelectedCustomer('all');
   };
+
   const saveTemplate = (templateData: TemplateSettings) => {
     const allTemplates = JSON.parse(localStorage.getItem('ap1700_templates') || '[]');
     
@@ -198,7 +197,7 @@ const loadActiveTemplate = () => {
     setSelectedTemplate(template);
     setCurrentView('template-edit');
   };
-  // Get unique customer names for filter dropdown
+
   const uniqueCustomers = Array.from(new Set(bills.map(bill => bill.customerName))).sort();
 
   const renderContent = () => {
@@ -221,9 +220,10 @@ const loadActiveTemplate = () => {
             user={user}
             bill={selectedBill}
             onEdit={() => handleEditBill(selectedBill)}
-            onBack={() => setCurrentView('list')}/>
+            onBack={() => setCurrentView('list')}
+          />
         ) : null;
-        case 'templates':
+      case 'templates':
         return (
           <TemplateManager
             user={user}
@@ -247,21 +247,21 @@ const loadActiveTemplate = () => {
       default:
         if (loading) {
           return (
-            <div className="p-12 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading bills...</p>
+            <div className="p-6 sm:p-12 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600 text-sm sm:text-base">Loading bills...</p>
             </div>
           );
         }
         
         if (error) {
           return (
-            <div className="p-12 text-center">
+            <div className="p-6 sm:p-12 text-center">
               <div className="text-red-600 mb-4">
-                <p className="text-lg font-semibold">Error loading bills</p>
-                <p>{error}</p>
+                <p className="text-base sm:text-lg font-semibold">Error loading bills</p>
+                <p className="text-sm sm:text-base">{error}</p>
               </div>
-              <Button onClick={loadBills} variant="outline">
+              <Button onClick={loadBills} variant="outline" size="sm">
                 Try Again
               </Button>
             </div>
@@ -282,13 +282,14 @@ const loadActiveTemplate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 relative">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-orange-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16 lg:h-18">
+      <header className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-orange-100 sticky top-0 z-40">
+        <div className="w-full px-3 sm:px-4 lg:px-6 xl:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18">
+            {/* Logo Section */}
             <div className="flex items-center flex-shrink-0">
-              <div className="w-32 h-12 sm:w-20 sm:h-12 md:w-24 md:h-14 lg:w-32 lg:h-16 mr-3 sm:mr-4 flex-shrink-0 p-1 sm:p-2">
+              <div className="w-12 h-10 sm:w-16 sm:h-12 md:w-20 md:h-14 lg:w-24 lg:h-16 flex-shrink-0">
                 <img 
                   src="/PG1.png"
                   alt="PragatiBook Logo" 
@@ -297,44 +298,97 @@ const loadActiveTemplate = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            {/* Center Section - User Info (Hidden on mobile) */}
+            <div className="hidden md:flex flex-1 justify-center px-4">
+              <div className="text-center">
+                <p className="text-sm lg:text-base text-gray-600 font-medium">
+                  Welcome, {user.name}
+                </p>
+              </div>
+            </div>
+            
+            {/* Right Section - Action Buttons */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Templates Button - Hidden on mobile when in list view */}
               {currentView === 'list' && (
-                <>
-                <Button variant="outline" onClick={handleTemplateManager} className="flex items-center">
-                   <Palette className="w-4 h-4 mr-2" />
-                   Templates
-                 </Button>
-                <Button onClick={handleCreateBill} className="flex items-center text-xs sm:text-sm h-8 sm:h-9 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" size="sm">
-                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
-                  <span className="hidden sm:inline">New Bill</span>
-                  <span className="sm:hidden">New</span>
+                <Button 
+                  variant="outline" 
+                  onClick={handleTemplateManager} 
+                  className="hidden sm:flex items-center h-8 sm:h-9 lg:h-10 px-2 sm:px-3 lg:px-4 text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50"
+                  size="sm"
+                >
+                  <Palette className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                  <span className="ml-1 sm:ml-2">Templates</span>
                 </Button>
-                </>
               )}
-              <Button variant="outline" onClick={onLogout} className="flex items-center text-xs sm:text-sm h-8 sm:h-9 border-orange-200 text-orange-700 hover:bg-orange-50" size="sm">
-                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
-                <span className="hidden sm:inline">Logout</span>
-                <span className="sm:hidden">Logout</span>
+              
+              {/* New Bill Button - Hidden on mobile when in list view (will be floating) */}
+              {currentView === 'list' && (
+                <Button 
+                  onClick={handleCreateBill} 
+                  className="hidden sm:flex items-center h-8 sm:h-9 lg:h-10 px-2 sm:px-3 lg:px-4 text-xs sm:text-sm bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" 
+                  size="sm"
+                >
+                  <Plus className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                  <span className="ml-1 sm:ml-2">New Bill</span>
+                </Button>
+              )}
+              
+              {/* Logout Button */}
+              <Button 
+                variant="outline" 
+                onClick={onLogout} 
+                className="flex items-center h-8 sm:h-9 lg:h-10 px-2 sm:px-3 lg:px-4 text-xs sm:text-sm border-orange-200 text-orange-700 hover:bg-orange-50" 
+                size="sm"
+              >
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                <span className="ml-1 sm:ml-2">Logout</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
+      {/* Mobile Action Bar - Only visible on mobile for list view */}
+      {currentView === 'list' && (
+        <div className="sm:hidden bg-white/95 backdrop-blur-sm border-b border-orange-100 px-3 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                Welcome, {user.name}
+              </p>
+              <p className="text-xs text-gray-600">
+                {filteredBills.length} of {bills.length} Bills
+              </p>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleTemplateManager} 
+              className="flex items-center h-8 px-3 text-xs border-orange-200 text-orange-700 hover:bg-orange-50"
+              size="sm"
+            >
+              <Palette className="w-3 h-3 mr-1" />
+              Templates
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+      <main className="w-full px-3 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 lg:py-8 pb-20 sm:pb-8">
         {currentView === 'list' ? (
-          <div className="mb-6 sm:mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="min-w-0">
-                <p className="text-xs sm:text-sm md:text-base text-black font-bold truncate">Welcome, {user.name}</p>
+          <div className="mb-4 sm:mb-6 lg:mb-8">
+            {/* Welcome Section - Desktop Only */}
+            <div className="hidden sm:flex items-center justify-between mb-6 lg:mb-8">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900">
+                  Your Bills
+                </h2>
               </div>
-              <div>
-                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Your Bills</h2>
-                
-              </div>
+              
+              {/* Bills Counter */}
               <div className="flex items-center bg-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg shadow-sm border flex-shrink-0">
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mr-2 flex-shrink-0" />
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mr-2" />
                 <span className="text-sm sm:text-base font-medium text-gray-700 whitespace-nowrap">
                   {filteredBills.length} of {bills.length} Bills
                 </span>
@@ -342,57 +396,59 @@ const loadActiveTemplate = () => {
             </div>
             
             {/* Search and Filter Section */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-orange-100 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-orange-100 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
+              <div className="space-y-3 sm:space-y-4 lg:space-y-0 lg:flex lg:gap-4 xl:gap-6">
                 {/* Search Bar */}
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 w-4 h-4 sm:w-5 sm:h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 w-4 h-4" />
                   <Input
                     placeholder="Search by customer name or description..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 sm:pl-12 pr-4 h-10 sm:h-11 text-sm sm:text-base border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                    className="w-full pl-10 pr-4 h-9 sm:h-10 lg:h-11 text-sm sm:text-base border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
                   />
                 </div>
                 
-                {/* Customer Filter */}
-                <div className="w-full sm:w-64 lg:w-72">
-                  <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                    <SelectTrigger className="w-full h-10 sm:h-11 border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-400">
-                      <div className="flex items-center">
-                        <Filter className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-orange-400 flex-shrink-0" />
-                        <SelectValue placeholder="Filter by customer" className="text-sm sm:text-base" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Customers</SelectItem>
-                      {uniqueCustomers.map((customer) => (
-                        <SelectItem key={customer} value={customer}>
-                          {customer}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Filter Controls */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:flex-shrink-0">
+                  {/* Customer Filter */}
+                  <div className="w-full sm:w-48 lg:w-56">
+                    <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                      <SelectTrigger className="w-full h-9 sm:h-10 lg:h-11 border-2 border-orange-200 focus:border-orange-400 focus:ring-orange-400">
+                        <div className="flex items-center min-w-0">
+                          <Filter className="w-4 h-4 mr-2 text-orange-400 flex-shrink-0" />
+                          <SelectValue placeholder="Filter by customer" className="text-sm sm:text-base truncate" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Customers</SelectItem>
+                        {uniqueCustomers.map((customer) => (
+                          <SelectItem key={customer} value={customer}>
+                            {customer}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Clear Filters */}
+                  {(searchQuery || selectedCustomer !== 'all') && (
+                    <Button
+                      variant="outline" 
+                      onClick={clearFilters}
+                      className="flex items-center justify-center whitespace-nowrap h-9 sm:h-10 lg:h-11 px-3 sm:px-4 border-orange-200 text-orange-700 hover:bg-orange-50 w-full sm:w-auto"
+                      size="sm"
+                    >
+                      <X className="w-4 h-4 mr-2 flex-shrink-0" />
+                      Clear Filters
+                    </Button>
+                  )}
                 </div>
-                
-                {/* Clear Filters */}
-                {(searchQuery || selectedCustomer) && (
-                  <Button
-                    variant="outline" 
-                    onClick={clearFilters}
-                    className="flex items-center whitespace-nowrap h-10 sm:h-11 px-3 sm:px-4 border-orange-200 text-orange-700 hover:bg-orange-50"
-                    size="sm"
-                  >
-                    <X className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
-                    <span className="hidden sm:inline">Clear</span>
-                    <span className="sm:hidden">Clear</span>
-                  </Button>
-                )}
               </div>
               
               {/* Results Summary */}
-              {(searchQuery || selectedCustomer) && (
-                <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t text-sm sm:text-base text-gray-600">
+              {(searchQuery || selectedCustomer !== 'all') && (
+                <div className="mt-3 sm:mt-4 lg:mt-6 pt-3 sm:pt-4 lg:pt-6 border-t text-xs sm:text-sm lg:text-base text-gray-600">
                   <p>
                     Showing {filteredBills.length} of {bills.length} bills
                     {searchQuery && (
@@ -412,6 +468,19 @@ const loadActiveTemplate = () => {
           {renderContent()}
         </div>
       </main>
+
+      {/* Floating New Bill Button - Mobile Only */}
+      {currentView === 'list' && (
+        <div className="sm:hidden fixed bottom-6 right-4 z-50">
+          <Button 
+            onClick={handleCreateBill} 
+            className="w-14 h-14 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
+            size="sm"
+          >
+            <Plus className="w-6 h-6 text-white" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
