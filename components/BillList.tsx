@@ -109,7 +109,7 @@ export default function BillList({ user, bills, onView, onEdit, onDelete }: Bill
                       {bill.customerName}
                     </h3>
                     <Badge variant="outline" className="flex items-center text-sm px-3 py-1 flex-shrink-0">
-                      <DollarSign className="w-3 h-3 mr-1" />
+                      
                       ₹{bill.total.toFixed(2)}
                     </Badge>
                   </div>

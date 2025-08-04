@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { TemplateSettings } from '@/types/template';
 import { User } from '@/types/auth';
-import { ArrowLeft, Save, Eye, Palette, Settings, Building, FileText, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Palette, Settings, Building, FileText, Plus, Trash2, ArrowRight, Upload, X } from 'lucide-react';
 
 interface TemplateCustomizerProps {
   user: User;
@@ -29,6 +29,7 @@ const defaultTemplate: Omit<TemplateSettings, 'id' | 'userId' | 'createdAt' | 'u
   companyPhone: '',
   companyEmail: '',
   companyWebsite: '',
+  logoUrl: '',
   logoSize: 'medium',
   logoPosition: 'left',
   primaryColor: '#2563eb',
@@ -58,9 +59,69 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
     existingTemplate || defaultTemplate
   );
   const [previewMode, setPreviewMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('basic');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string>('');
+
+  const tabs = ['basic', 'design', 'layout', 'fields', 'custom'];
+
+  useEffect(() => {
+    if (template.logoUrl) {
+      setLogoPreview(template.logoUrl);
+    }
+  }, [template.logoUrl]);
 
   const updateTemplate = (field: string, value: any) => {
     setTemplate(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNextTab = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    }
+  };
+
+  const handlePrevTab = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+      
+      setLogoFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setLogoPreview(result);
+        updateTemplate('logoUrl', result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview('');
+    updateTemplate('logoUrl', '');
+    updateTemplate('showLogo', false);
   };
 
   const addCustomField = () => {
@@ -167,6 +228,11 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
                       </div>
                     </div>
                   )}
+                    <img 
+                      src={logoPreview || template.logoUrl}
+                      alt="Company Logo"
+                      className="object-contain rounded border"
+                    />
                   <div>
                     <h1 
                       className="text-lg sm:text-xl lg:text-2xl font-bold mb-1"
@@ -312,7 +378,7 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
         </div>
       </div>
 
-      <Tabs defaultValue="basic" className="space-y-4 sm:space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
         <div className="overflow-x-auto">
           <TabsList className="grid w-full grid-cols-5 min-w-max sm:min-w-0">
           <TabsTrigger value="basic" className="flex items-center text-xs sm:text-sm px-2 sm:px-4">
@@ -437,6 +503,15 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-4">
+            <div></div>
+            <Button onClick={handleNextTab} className="flex items-center">
+              Next: Design
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </TabsContent>
 
         <TabsContent value="design" className="space-y-4 sm:space-y-6">
@@ -528,6 +603,18 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-4">
+            <Button variant="outline" onClick={handlePrevTab} className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous: Basic Info
+            </Button>
+            <Button onClick={handleNextTab} className="flex items-center">
+              Next: Layout
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </TabsContent>
 
         <TabsContent value="layout" className="space-y-4 sm:space-y-6">
@@ -539,7 +626,7 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="headerStyle" className="text-sm sm:text-base font-medium">Header Style</Label>
-                  <Select value={template.headerStyle} onValueChange={(value) => updateTemplate('headerStyle', value)} >
+                  <Select value={template.headerStyle} onValueChange={(value) => updateTemplate('headerStyle', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -611,6 +698,18 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-4">
+            <Button variant="outline" onClick={handlePrevTab} className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous: Design
+            </Button>
+            <Button onClick={handleNextTab} className="flex items-center">
+              Next: Fields
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </TabsContent>
 
         <TabsContent value="fields" className="space-y-4 sm:space-y-6">
@@ -682,6 +781,119 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
 
           <Card>
             <CardHeader>
+              <CardTitle className="text-lg sm:text-xl">Company Logo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 sm:space-y-5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="showLogo" className="text-sm sm:text-base font-medium">Show Logo on Invoice</Label>
+                <Switch
+                  id="showLogo"
+                  checked={template.showLogo}
+                  onCheckedChange={(checked) => updateTemplate('showLogo', checked)}
+                />
+              </div>
+              
+              {template.showLogo && (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm sm:text-base font-medium">Upload Logo</Label>
+                    <div className="mt-2">
+                      {logoPreview ? (
+                        <div className="flex items-center space-x-4">
+                          <div className="relative">
+                            <img
+                              src={logoPreview}
+                              alt="Logo preview"
+                              className="w-20 h-20 object-contain border rounded-lg bg-gray-50"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={removeLogo}
+                              className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-600 mb-2">Logo uploaded successfully</p>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('logo-upload')?.click()}
+                              className="flex items-center"
+                            >
+                              <Upload className="w-4 h-4 mr-2" />
+                              Change Logo
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                          <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                          <p className="text-sm text-gray-600 mb-2">Upload your company logo</p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => document.getElementById('logo-upload')?.click()}
+                            className="flex items-center mx-auto"
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Choose File
+                          </Button>
+                        </div>
+                      )}
+                      <input
+                        id="logo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Supported formats: PNG, JPG, GIF. Max size: 5MB
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="logoSize" className="text-sm sm:text-base font-medium">Logo Size</Label>
+                      <Select value={template.logoSize} onValueChange={(value) => updateTemplate('logoSize', value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Small</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="large">Large</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="logoPosition" className="text-sm sm:text-base font-medium">Logo Position</Label>
+                      <Select value={template.logoPosition} onValueChange={(value) => updateTemplate('logoPosition', value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="left">Left</SelectItem>
+                          <SelectItem value="center">Center</SelectItem>
+                          <SelectItem value="right">Right</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle className="text-lg sm:text-xl">Text Content</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 sm:space-y-5">
@@ -707,6 +919,18 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               </div>
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-4">
+            <Button variant="outline" onClick={handlePrevTab} className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous: Layout
+            </Button>
+            <Button onClick={handleNextTab} className="flex items-center">
+              Next: Custom Fields
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </TabsContent>
 
         <TabsContent value="custom" className="space-y-4 sm:space-y-6">
@@ -779,6 +1003,18 @@ export default function TemplateCustomizer({ user, onBack, onSave, existingTempl
               )}
             </CardContent>
           </Card>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-4">
+            <Button variant="outline" onClick={handlePrevTab} className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Previous: Fields
+            </Button>
+            <Button onClick={handleSave} className="flex items-center">
+              <Save className="w-4 h-4 mr-2" />
+              Save Template
+            </Button>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
