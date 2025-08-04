@@ -152,7 +152,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) 
             {error && <p className="text-red-500 text-xs sm:text-sm bg-red-50 p-3 rounded">{error}</p>}
             {success && <p className="text-green-500 text-xs sm:text-sm bg-green-50 p-3 rounded">{success}</p>}
             
-            <Button type="submit" className="w-full text-sm sm:text-base h-10 sm:h-11" disabled={loading}>
+            <Button type="submit" className="w-full text-sm sm:text-base h-10 sm:h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading}>
               {loading ? 'Sending OTP...' : 'Send OTP'}
             </Button>
           </form>
@@ -192,7 +192,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) 
             {success && <p className="text-green-500 text-xs sm:text-sm bg-green-50 p-3 rounded">{success}</p>}
             
             <div className="space-y-3">
-              <Button type="submit" className="w-full text-sm sm:text-base h-10 sm:h-11" disabled={loading || otp.length !== 6}>
+              <Button type="submit" className="w-full text-sm sm:text-base h-10 sm:h-11 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading || otp.length !== 6}>
                 {loading ? 'Verifying...' : 'Verify OTP'}
               </Button>
               
