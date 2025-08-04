@@ -313,7 +313,7 @@ export default function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) 
           </div>
           
           <CardTitle className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            AP1700
+            PragatiBook
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm md:text-base text-gray-600 px-2">
             Professional Bill Management System
