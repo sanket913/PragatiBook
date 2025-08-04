@@ -7,17 +7,23 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { authApi, ApiError } from '@/lib/api';
-import { Building2 } from 'lucide-react';
+import ForgotPasswordForm from './ForgotPasswordForm';
 
 interface AuthFormProps {
   onLogin: (user: any) => void;
 }
 
 export default function AuthForm({ onLogin }: AuthFormProps) {
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // If showing forgot password form, render it instead
+  if (showForgotPassword) {
+    return <ForgotPasswordForm onBack={() => setShowForgotPassword(false)} />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +97,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
             </div>
           </div>
           <CardTitle className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            AP1700
+            PragatiBook
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm md:text-base text-gray-600 px-2">
             Professional Bill Management System
@@ -131,9 +137,19 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
                   />
                 </div>
                 {error && <p className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 rounded">{error}</p>}
-                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6" disabled={loading}>
+                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
+                <div className="text-center mt-4">
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 p-0 h-auto"
+                  >
+                    Forgot your password?
+                  </Button>
+                </div>
               </form>
             </TabsContent>
             
@@ -188,7 +204,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
                   />
                 </div>
                 {error && <p className="text-red-500 text-xs sm:text-sm bg-red-50 p-2 rounded">{error}</p>}
-                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6" disabled={loading}>
+                <Button type="submit" className="w-full text-sm sm:text-base h-9 sm:h-10 mt-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600" disabled={loading}>
                   {loading ? 'Creating account...' : 'Create Account'}
                 </Button>
               </form>
