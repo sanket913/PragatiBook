@@ -260,7 +260,7 @@ export default function BillForm({ bill, onSave, onCancel }: BillFormProps) {
                     <Label className="text-sm font-medium">Feet</Label>
                     <Input
                       type="number"
-                      value={item.feet}
+                     value={item.feet || ''}
                       onChange={(e) => updateItem(item.id, 'feet', parseFloat(e.target.value) || 0)}
                       min="0"
                       step="0.1"
@@ -272,7 +272,7 @@ export default function BillForm({ bill, onSave, onCancel }: BillFormProps) {
                     <Label className="text-sm font-medium">Inches</Label>
                     <Input
                       type="number"
-                      value={item.inches}
+                     value={item.inches || ''}
                       onChange={(e) => updateItem(item.id, 'inches', parseFloat(e.target.value) || 0)}
                       min="0"
                       max="11"
@@ -297,7 +297,7 @@ export default function BillForm({ bill, onSave, onCancel }: BillFormProps) {
                     <Label className="text-sm font-medium">Rate *</Label>
                     <Input
                       type="number"
-                      value={item.defaultValue}
+                     value={item.defaultValue || ''}
                       onChange={(e) => updateItem(item.id, 'defaultValue', parseFloat(e.target.value) || 0)}
                       min="0"
                       step="0.01"
